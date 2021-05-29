@@ -40,6 +40,8 @@ import software.amazon.awssdk.services.glue.model.CreateTableRequest;
 import software.amazon.awssdk.services.glue.model.EntityNotFoundException;
 import software.amazon.awssdk.services.glue.model.GetTableRequest;
 import software.amazon.awssdk.services.glue.model.GetTableResponse;
+import software.amazon.awssdk.services.glue.model.SerDeInfo;
+import software.amazon.awssdk.services.glue.model.StorageDescriptor;
 import software.amazon.awssdk.services.glue.model.Table;
 import software.amazon.awssdk.services.glue.model.TableInput;
 import software.amazon.awssdk.services.glue.model.UpdateTableRequest;
@@ -165,6 +167,7 @@ class GlueTableOperations extends BaseMetastoreTableOperations {
   }
 
   private void persistGlueTable(Table glueTable, Map<String, String> parameters) {
+    StorageDescriptor dummyStorageDescriptor = StorageDescriptor.builder().serdeInfo(SerDeInfo.builder().build()).build();
     if (glueTable != null) {
       LOG.debug("Committing existing Glue table: {}", tableName());
       glue.updateTable(UpdateTableRequest.builder()
@@ -175,6 +178,7 @@ class GlueTableOperations extends BaseMetastoreTableOperations {
               .name(tableName)
               .tableType(GLUE_EXTERNAL_TABLE_TYPE)
               .parameters(parameters)
+              .storageDescriptor(dummyStorageDescriptor)
               .build())
           .build());
     } else {
@@ -186,6 +190,7 @@ class GlueTableOperations extends BaseMetastoreTableOperations {
               .name(tableName)
               .tableType(GLUE_EXTERNAL_TABLE_TYPE)
               .parameters(parameters)
+              .storageDescriptor(dummyStorageDescriptor)
               .build())
           .build());
     }
